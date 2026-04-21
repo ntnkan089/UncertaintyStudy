@@ -6,32 +6,32 @@ import TextPairProblem from "./TextPairProblem.jsx";
 const ROOT_COLLECTION = "uncertainty_user";
 
 // Screening pairs from v1 p.21 — same for all participants.
-// Correct answers are which text is MORE certain. "Tie" means same certainty.
+// `correctAnswers` lists all choices considered correct for the new 5-option format.
 const SCREENING_PAIRS = [
   {
     textA: "Microtubules grew outward radially within each aster.",
     textB: "Within each aster, microtubules extended outward in a radial pattern.",
-    answer: "Tie",
+    correctAnswers: ["No difference"],
   },
   {
     textA: "This ad was not aligned with the browsing behavior or demographic responses in either of the targeted conditions; this enabled us to examine the effects of participants' perceptions of being targeted while keeping the advertisement constant across conditions.",
     textB: "This ad was not matched to the browsing behavior or demographic responses in either of the targeted conditions; this allowed us to test the effects of participants' perceptions of being targeted while holding the advertisement constant across conditions.",
-    answer: "Tie",
+    correctAnswers: ["No difference"],
   },
   {
     textA: "Finding: 'Element separation may be required where components of the call have different amplitudes.'",
     textB: "Element separation is required where components of the call have different amplitudes.",
-    answer: "Text B",
+    correctAnswers: ["Leaning B", "Clearly B"],
   },
   {
     textA: "Further, beta band phenomena are clearly strongly affected by normal voluntary movement, which is likely to complicate their use as signatures of motor impairment.",
     textB: "Further, beta band phenomena are strongly affected by normal voluntary movement, which may complicate their use as signatures of motor impairment.",
-    answer: "Text A",
+    correctAnswers: ["Leaning B", "Clearly B"],
   },
   {
     textA: "Initial checks of task compliance (see methods for details) revealed that a significant proportion of participants (55%) from India were not able to complete the task.",
     textB: "Initial checks of task compliance (see methods for details) suggested that a substantial proportion of participants (around 55%) from India may not have been able to complete the task.",
-    answer: "Text A",
+    correctAnswers: ["Leaning A", "Clearly A"],
   },
 ];
 
@@ -44,7 +44,7 @@ export default function Screening({ PID, onPass, onFail }) {
 
   const handleSubmit = async (result) => {
     const pair = SCREENING_PAIRS[currentIdx];
-    const isCorrect = result.user_choice === pair.answer;
+    const isCorrect = pair.correctAnswers.includes(result.user_choice);
     const newCorrect = correctCount + (isCorrect ? 1 : 0);
 
     try {
@@ -59,8 +59,7 @@ export default function Screening({ PID, onPass, onFail }) {
         is_screening: true,
         is_attention_check: false,
         user_choice: result.user_choice,
-        user_magnitude_choice: result.user_magnitude_choice,
-        correct_answer: pair.answer,
+        correct_answers: pair.correctAnswers,
         is_correct: isCorrect,
         response_time: result.response_time,
         on_screen_time: result.on_screen_time,

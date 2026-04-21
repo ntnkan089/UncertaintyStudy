@@ -1,12 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 
-const CERTAINTY_CHOICES = ["Text A", "Text B", "Tie"];
-const MAGNITUDE_CHOICES = [
-  "No Difference",
-  "Subtle Difference",
-  "Moderate Difference",
-  "Strong Difference",
+export const CERTAINTY_CHOICES = [
+  "Clearly A",
+  "Leaning A",
+  "No difference",
+  "Leaning B",
+  "Clearly B",
 ];
+
+const CHOICE_DESCRIPTIONS = {
+  "Clearly A": "the main finding in A is presented much more confidently than in B",
+  "Leaning A": "the main finding in A is presented a little more confidently than in B",
+  "No difference": "the main finding is presented equally confidently in both",
+  "Leaning B": "the main finding in B is presented a little more confidently than in A",
+  "Clearly B": "the main finding in B is presented much more confidently than in A",
+};
 
 export default function TextPairProblem({
   textA,
@@ -14,11 +22,10 @@ export default function TextPairProblem({
   problemIndex,
   totalProblems,
   onSubmit,
-  showTooltip = true,
+  questionText = "Which text communicates its main claim with more certainty, focusing on how confidently each text presents its conclusion?",
+  showChoiceTooltips = true,
 }) {
-  const [certaintyChoice, setCertaintyChoice] = useState(null);
-  const [magnitudeChoice, setMagnitudeChoice] = useState(null);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [choice, setChoice] = useState(null);
 
   const startTimeRef = useRef(Date.now());
   const onScreenTimeRef = useRef(0);
@@ -30,8 +37,7 @@ export default function TextPairProblem({
     onScreenTimeRef.current = 0;
     lastVisibleRef.current = Date.now();
     pageVisibleRef.current = true;
-    setCertaintyChoice(null);
-    setMagnitudeChoice(null);
+    setChoice(null);
   }, [textA, textB]);
 
   useEffect(() => {
@@ -47,7 +53,7 @@ export default function TextPairProblem({
     return () => document.removeEventListener("visibilitychange", handleVis);
   }, []);
 
-  const canSubmit = certaintyChoice !== null && magnitudeChoice !== null;
+  const canSubmit = choice !== null;
 
   const handleNext = () => {
     if (!canSubmit) return;
@@ -60,15 +66,14 @@ export default function TextPairProblem({
     const responseTime = Date.now() - startTimeRef.current;
 
     onSubmit({
-      user_choice: certaintyChoice,
-      user_magnitude_choice: magnitudeChoice,
+      user_choice: choice,
       response_time: responseTime,
       on_screen_time: Math.min(onScreenTimeRef.current, responseTime),
     });
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: "0 auto", padding: 20, textAlign: "left" }}>
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: 20, textAlign: "left" }}>
       <div style={{ textAlign: "right", marginBottom: 10, fontSize: 14, color: "var(--color-text-muted)" }}>
         Example {problemIndex + 1} / {totalProblems}
       </div>
@@ -85,61 +90,17 @@ export default function TextPairProblem({
       </div>
 
       <div style={{ marginTop: 24 }}>
-        <p style={{ fontWeight: 600 }}>
-          Which of the <strong>two texts is more certain about the main claim</strong>.
-          If both texts express about the same level of certainty, select "Tie".
-          {showTooltip && (
-            <span
-              style={tooltipTrigger}
-              onMouseEnter={() => setTooltipOpen(true)}
-              onMouseLeave={() => setTooltipOpen(false)}
-              onClick={() => setTooltipOpen(!tooltipOpen)}
-            >
-              ?
-              {tooltipOpen && (
-                <div style={tooltipBox}>
-                  <ul style={{ margin: 0, paddingLeft: 18, textAlign: "left", fontWeight: 400 }}>
-                    <li><strong>Text A</strong> -- main finding in A sounds more certain than in B</li>
-                    <li><strong>Text B</strong> -- main finding in B sounds more certain than in A</li>
-                    <li><strong>Tie</strong> -- main finding sounds equally certain in both</li>
-                  </ul>
-                </div>
-              )}
-            </span>
-          )}
-        </p>
+        <p style={{ fontWeight: 600 }}>{questionText}</p>
 
         <div style={radioRow}>
           {CERTAINTY_CHOICES.map((c) => (
-            <label key={c} style={radioLabel}>
-              <input
-                type="radio"
-                name="certainty"
-                checked={certaintyChoice === c}
-                onChange={() => setCertaintyChoice(c)}
-              />
-              {c}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ marginTop: 20 }}>
-        <p style={{ fontWeight: 600 }}>
-          How different are the two texts in <strong>how strongly they express certainty</strong> about the main claim?
-        </p>
-
-        <div style={radioRow}>
-          {MAGNITUDE_CHOICES.map((c) => (
-            <label key={c} style={radioLabel}>
-              <input
-                type="radio"
-                name="magnitude"
-                checked={magnitudeChoice === c}
-                onChange={() => setMagnitudeChoice(c)}
-              />
-              {c}
-            </label>
+            <ChoiceRadio
+              key={c}
+              label={c}
+              checked={choice === c}
+              onSelect={() => setChoice(c)}
+              description={showChoiceTooltips ? CHOICE_DESCRIPTIONS[c] : null}
+            />
           ))}
         </div>
       </div>
@@ -162,6 +123,30 @@ export default function TextPairProblem({
         </button>
       </div>
     </div>
+  );
+}
+
+function ChoiceRadio({ label, checked, onSelect, description }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <label
+      style={{ ...radioLabel, position: "relative" }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <input
+        type="radio"
+        name="certainty"
+        checked={checked}
+        onChange={onSelect}
+      />
+      {label}
+      {description && hover && (
+        <div style={choiceTooltipBox}>
+          <strong>{label}</strong> – {description}
+        </div>
+      )}
+    </label>
   );
 }
 
@@ -203,33 +188,19 @@ const radioLabel = {
   cursor: "pointer",
 };
 
-const tooltipTrigger = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: 20,
-  height: 20,
-  borderRadius: "50%",
-  backgroundColor: "#007bff",
-  color: "white",
-  fontSize: 12,
-  fontWeight: 700,
-  marginLeft: 6,
-  cursor: "pointer",
-  position: "relative",
-};
-
-const tooltipBox = {
+const choiceTooltipBox = {
   position: "absolute",
   top: 28,
-  left: -100,
-  width: 350,
+  left: 0,
+  width: 280,
   backgroundColor: "var(--color-bg)",
   border: "1px solid var(--color-text-muted)",
   borderRadius: 8,
-  padding: 14,
+  padding: 10,
   boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
   zIndex: 100,
   fontSize: 13,
-  lineHeight: 1.6,
+  lineHeight: 1.5,
+  fontWeight: 400,
+  color: "var(--color-text)",
 };
