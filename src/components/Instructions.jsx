@@ -60,7 +60,13 @@ export default function Instructions({ PID, onNext, onBack }) {
     <div style={container}>
       {pageIdx === 0 && <Page1 />}
       {pageIdx === 1 && <Page2 />}
-      {pageIdx === 2 && <WorkedExample example={EXAMPLE_1} title="Example Question 1" />}
+      {pageIdx === 2 && (
+        <WorkedExample
+          example={EXAMPLE_1}
+          title="Example Question 1"
+          intro="The following example shows how different reasoning might lead to a decision. Note that these are just examples. There may be other ways to interpret the text. In the screening and the main study, you will not be provided with explanations."
+        />
+      )}
       {pageIdx === 3 && <WorkedExample example={EXAMPLE_2} title="Example Question 2" />}
 
       <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginTop: 14, textAlign: "center" }}>
@@ -121,13 +127,11 @@ function Page2() {
   );
 }
 
-function WorkedExample({ example, title }) {
+function WorkedExample({ example, title, intro }) {
   return (
     <div>
+      {intro && <p style={para}>{intro}</p>}
       <h2 style={{ marginBottom: 4 }}>{title}</h2>
-      <p style={{ color: "var(--color-text-muted)", fontSize: 13, marginTop: 0 }}>
-        (worked example — answer and reasoning shown)
-      </p>
 
       <div style={pairContainer}>
         <div style={textBox}>
