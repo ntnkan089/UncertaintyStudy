@@ -2,18 +2,18 @@ import { useState, useRef, useEffect } from "react";
 
 export const CERTAINTY_CHOICES = [
   "Clearly A",
-  "Leaning A",
-  "No difference",
-  "Leaning B",
+  "Slightly A",
+  "No clear difference",
+  "Slightly B",
   "Clearly B",
 ];
 
 const CHOICE_DESCRIPTIONS = {
-  "Clearly A": "the main finding in A is presented much more confidently than in B",
-  "Leaning A": "the main finding in A is presented a little more confidently than in B",
-  "No difference": "the main finding is presented equally confidently in both",
-  "Leaning B": "the main finding in B is presented a little more confidently than in A",
-  "Clearly B": "the main finding in B is presented much more confidently than in A",
+  "Clearly A": "the main finding in A is clearly more confident than in B",
+  "Slightly A": "the main finding in A is slightly more confident than in B",
+  "No clear difference": "there is no clear difference in how the main finding is communicated",
+  "Slightly B": "the main finding in B is slightly more confident than in A",
+  "Clearly B": "the main finding in B is clearly more confident than in A",
 };
 
 export default function TextPairProblem({
@@ -22,8 +22,9 @@ export default function TextPairProblem({
   problemIndex,
   totalProblems,
   onSubmit,
-  questionText = "Which text communicates its main claim with more certainty, focusing on how confidently each text presents its conclusion?",
+  questionText = "Which text communicates its main claim with more certainty? Focus on how confidently each text presents its conclusion.",
   showChoiceTooltips = true,
+  counterLabel = "Example",
 }) {
   const [choice, setChoice] = useState(null);
 
@@ -75,7 +76,7 @@ export default function TextPairProblem({
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: 20, textAlign: "left" }}>
       <div style={{ textAlign: "right", marginBottom: 10, fontSize: 14, color: "var(--color-text-muted)" }}>
-        Example {problemIndex + 1} / {totalProblems}
+        {counterLabel} {problemIndex + 1} / {totalProblems}
       </div>
 
       <div style={pairContainer}>

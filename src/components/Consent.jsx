@@ -41,24 +41,24 @@ export default function Consent({ PID, onNext }) {
         </li>
         <li>
           <strong>Participation in this study is voluntary.</strong> There are no
-          alternative procedures available. You may refuse to participate or
-          withdraw at any time.
+          alternative procedures available. The only alternative is not to
+          participate in this study. You may refuse to participate or withdraw
+          at any time.
         </li>
       </ul>
 
       <h3 style={{ textAlign: "center" }}>Study Information Sheet</h3>
       <h4 style={{ textAlign: "center" }}>
-        Human Judgments of Certainty in Text Pairs
+        Human Judgment of Certainty in Text Pairs
       </h4>
 
       <p>
         <strong>Project Summary</strong>
         <br />
-        This study examines how people perceive and compare how strongly
-        different texts express a claim. Participants will be shown pairs of
-        texts that convey similar information and asked to evaluate their
-        relative level of certainty. The goal is to better understand how
-        wording influences perceived confidence in written communication.
+        This study examines how people perceive and compare the level of
+        certainty in different text statements. Participants will be shown pairs
+        of texts that convey similar information and asked to evaluate their
+        perception of the relative level of certainty expressed in each text.
       </p>
 
       <p>
@@ -80,7 +80,7 @@ export default function Consent({ PID, onNext }) {
         <strong>Eligibility Requirements</strong>
         <br />
         You may participate <strong>only once</strong> in this study. You are
-        eligible if you are:
+        eligible to participate in this study if you are:
       </p>
       <ul>
         <li>United States citizen/resident</li>
@@ -98,7 +98,8 @@ export default function Consent({ PID, onNext }) {
         <u>Note</u>: If your performance is below a minimal threshold for
         quality, you will not be compensated.
         <br />
-        This study includes comprehension and attention checks. If you fail
+        This study includes comprehension and attention checks to ensure
+        participants complete the tasks honestly and thoroughly. If you fail
         these checks, you will not be compensated.
         <br />
         Do not refresh your browser during the study, as it will cause data
@@ -109,7 +110,9 @@ export default function Consent({ PID, onNext }) {
         <strong>Confidentiality &amp; Anonymity</strong>
         <br />
         All research data collected will be stored securely and confidentially
-        on a password protected server indefinitely.
+        on a password protected server indefinitely. Identifying details will
+        not be associated with any data provided by you as part of any
+        publication or presentation.
       </p>
 
       <p>

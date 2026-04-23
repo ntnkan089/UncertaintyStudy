@@ -20,7 +20,7 @@ const useQueryParams = () =>
 
 export default function App() {
   const searchParams = useQueryParams();
-  const qgroup = Number(searchParams.get("qgr")) || 0;
+  const qgroup = Number(searchParams.get("qgr")) || 1;
   const isDev = import.meta.env.MODE === "development";
 
   const [page, setPage] = useState("consent");

@@ -11,27 +11,27 @@ const SCREENING_PAIRS = [
   {
     textA: "Microtubules grew outward radially within each aster.",
     textB: "Within each aster, microtubules extended outward in a radial pattern.",
-    correctAnswers: ["No difference"],
+    correctAnswers: ["No clear difference"],
   },
   {
     textA: "This ad was not aligned with the browsing behavior or demographic responses in either of the targeted conditions; this enabled us to examine the effects of participants' perceptions of being targeted while keeping the advertisement constant across conditions.",
     textB: "This ad was not matched to the browsing behavior or demographic responses in either of the targeted conditions; this allowed us to test the effects of participants' perceptions of being targeted while holding the advertisement constant across conditions.",
-    correctAnswers: ["No difference"],
+    correctAnswers: ["No clear difference"],
   },
   {
     textA: "Finding: 'Element separation may be required where components of the call have different amplitudes.'",
     textB: "Element separation is required where components of the call have different amplitudes.",
-    correctAnswers: ["Leaning B", "Clearly B"],
+    correctAnswers: ["Slightly B", "Clearly B"],
   },
   {
     textA: "Further, beta band phenomena are clearly strongly affected by normal voluntary movement, which is likely to complicate their use as signatures of motor impairment.",
     textB: "Further, beta band phenomena are strongly affected by normal voluntary movement, which may complicate their use as signatures of motor impairment.",
-    correctAnswers: ["Leaning B", "Clearly B"],
+    correctAnswers: ["Slightly B", "Clearly B"],
   },
   {
     textA: "Initial checks of task compliance (see methods for details) revealed that a significant proportion of participants (55%) from India were not able to complete the task.",
     textB: "Initial checks of task compliance (see methods for details) suggested that a substantial proportion of participants (around 55%) from India may not have been able to complete the task.",
-    correctAnswers: ["Leaning A", "Clearly A"],
+    correctAnswers: ["Slightly A", "Clearly A"],
   },
 ];
 

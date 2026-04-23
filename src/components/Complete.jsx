@@ -4,9 +4,8 @@ import { doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
 const ROOT_COLLECTION = "uncertainty_user";
 
-// TODO: replace with real Prolific completion codes
-const PASS_URL = "https://app.prolific.com/submissions/complete?cc=PLACEHOLDER_PASS";
-const FAIL_URL = "https://app.prolific.com/submissions/complete?cc=PLACEHOLDER_FAIL";
+const PASS_URL = "https://app.prolific.com/submissions/complete?cc=C1L81448";
+const FAIL_URL = "https://app.prolific.com/submissions/complete?cc=C1AOAVMH";
 
 const scale = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"];
 
