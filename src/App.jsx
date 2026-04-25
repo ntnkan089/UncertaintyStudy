@@ -26,6 +26,8 @@ export default function App() {
   const [page, setPage] = useState("consent");
   const [firebaseUID, setFirebaseUID] = useState(null);
   const [isDuplicate, setIsDuplicate] = useState(false);
+  const [instructionsStartPage, setInstructionsStartPage] = useState(0);
+  const [exampleSelections, setExampleSelections] = useState({});
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((user) => {
@@ -122,7 +124,15 @@ export default function App() {
             {page === "instructions" && (
               <Instructions
                 PID={PID}
-                onNext={() => setPage("pledge")}
+                initialPage={instructionsStartPage}
+                exampleSelections={exampleSelections}
+                onSaveExampleSelection={(idx, sel) =>
+                  setExampleSelections((prev) => ({ ...prev, [idx]: sel }))
+                }
+                onNext={() => {
+                  setInstructionsStartPage(0);
+                  setPage("pledge");
+                }}
                 onBack={() => setPage("consent")}
               />
             )}
@@ -131,7 +141,10 @@ export default function App() {
               <IntegrityPledge
                 PID={PID}
                 onNext={() => setPage("screening")}
-                onBack={() => setPage("instructions")}
+                onBack={() => {
+                  setInstructionsStartPage(4);
+                  setPage("instructions");
+                }}
               />
             )}
 

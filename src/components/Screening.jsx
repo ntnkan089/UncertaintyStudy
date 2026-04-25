@@ -1,49 +1,86 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "../config/firestore.js";
 import { doc, updateDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import Papa from "papaparse";
 import TextPairProblem from "./TextPairProblem.jsx";
 
 const ROOT_COLLECTION = "uncertainty_user";
-
-// Screening pairs from v1 p.21 — same for all participants.
-// `correctAnswers` lists all choices considered correct for the new 5-option format.
-const SCREENING_PAIRS = [
-  {
-    textA: "Microtubules grew outward radially within each aster.",
-    textB: "Within each aster, microtubules extended outward in a radial pattern.",
-    correctAnswers: ["No clear difference"],
-  },
-  {
-    textA: "This ad was not aligned with the browsing behavior or demographic responses in either of the targeted conditions; this enabled us to examine the effects of participants' perceptions of being targeted while keeping the advertisement constant across conditions.",
-    textB: "This ad was not matched to the browsing behavior or demographic responses in either of the targeted conditions; this allowed us to test the effects of participants' perceptions of being targeted while holding the advertisement constant across conditions.",
-    correctAnswers: ["No clear difference"],
-  },
-  {
-    textA: "Finding: 'Element separation may be required where components of the call have different amplitudes.'",
-    textB: "Element separation is required where components of the call have different amplitudes.",
-    correctAnswers: ["Slightly B", "Clearly B"],
-  },
-  {
-    textA: "Further, beta band phenomena are clearly strongly affected by normal voluntary movement, which is likely to complicate their use as signatures of motor impairment.",
-    textB: "Further, beta band phenomena are strongly affected by normal voluntary movement, which may complicate their use as signatures of motor impairment.",
-    correctAnswers: ["Slightly B", "Clearly B"],
-  },
-  {
-    textA: "Initial checks of task compliance (see methods for details) revealed that a significant proportion of participants (55%) from India were not able to complete the task.",
-    textB: "Initial checks of task compliance (see methods for details) suggested that a substantial proportion of participants (around 55%) from India may not have been able to complete the task.",
-    correctAnswers: ["Slightly A", "Clearly A"],
-  },
-];
-
 const PASS_THRESHOLD = 4;
 
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Parses an expected_answer cell like "Clearly {Generated},Slightly {Original}"
+// into a list of raw labels containing {Original} / {Generated} placeholders.
+function parseExpectedTemplates(raw) {
+  if (!raw) return [];
+  return String(raw)
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+// Resolve a placeholder template against a specific A/B mapping.
+// `aIsOriginal` tells us whether Original was rendered as Text A.
+// "Clearly {Generated}" → "Clearly B" if Generated is Text B; "Clearly A" otherwise.
+function resolveExpected(template, aIsOriginal) {
+  return template
+    .replace("{Original}", aIsOriginal ? "A" : "B")
+    .replace("{Generated}", aIsOriginal ? "B" : "A");
+}
+
 export default function Screening({ PID, onPass, onFail }) {
+  const [pairs, setPairs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
 
+  useEffect(() => {
+    const base = import.meta.env.BASE_URL;
+    fetch(base + "screening_examples.csv")
+      .then((r) => r.text())
+      .then((csv) => {
+        const parsed = Papa.parse(csv, { header: true, skipEmptyLines: true });
+        const rows = parsed.data
+          .map((r) => ({
+            original: r.Original ?? r.original ?? "",
+            generated: r.Generated ?? r.generated ?? "",
+            expectedTemplates: parseExpectedTemplates(r.expected_answer),
+          }))
+          .filter((r) => r.original && r.generated);
+
+        const shuffled = shuffleArray(rows).map((r) => {
+          const aIsOriginal = Math.random() < 0.5;
+          const correctAnswers = r.expectedTemplates.map((t) =>
+            resolveExpected(t, aIsOriginal),
+          );
+          return {
+            textA: aIsOriginal ? r.original : r.generated,
+            textB: aIsOriginal ? r.generated : r.original,
+            text_A_is_original: aIsOriginal ? 1 : 0,
+            text_B_is_original: aIsOriginal ? 0 : 1,
+            correctAnswers,
+          };
+        });
+
+        setPairs(shuffled);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Screening CSV load failed:", err);
+        setLoading(false);
+      });
+  }, []);
+
   const handleSubmit = async (result) => {
-    const pair = SCREENING_PAIRS[currentIdx];
+    const pair = pairs[currentIdx];
     const isCorrect = pair.correctAnswers.includes(result.user_choice);
     const newCorrect = correctCount + (isCorrect ? 1 : 0);
 
@@ -58,6 +95,8 @@ export default function Screening({ PID, onPass, onFail }) {
         question_id: currentIdx,
         is_screening: true,
         is_attention_check: false,
+        text_A_is_original: pair.text_A_is_original,
+        text_B_is_original: pair.text_B_is_original,
         user_choice: result.user_choice,
         correct_answers: pair.correctAnswers,
         is_correct: isCorrect,
@@ -69,7 +108,7 @@ export default function Screening({ PID, onPass, onFail }) {
       console.error("Screening save failed:", err);
     }
 
-    if (currentIdx < SCREENING_PAIRS.length - 1) {
+    if (currentIdx < pairs.length - 1) {
       setCorrectCount(newCorrect);
       setCurrentIdx(currentIdx + 1);
       return;
@@ -91,21 +130,24 @@ export default function Screening({ PID, onPass, onFail }) {
     else onFail();
   };
 
+  if (loading) return <div>Loading screening questions...</div>;
+  if (!pairs.length) return <div>No screening questions found.</div>;
   if (finished) return null;
 
-  const pair = SCREENING_PAIRS[currentIdx];
+  const pair = pairs[currentIdx];
 
   return (
     <div>
       <h2 style={{ marginBottom: 4 }}>Screening Check</h2>
       <p style={{ color: "var(--color-text-muted)", marginBottom: 16, fontSize: 14 }}>
-        Answer at least {PASS_THRESHOLD} of {SCREENING_PAIRS.length} correctly to proceed.
+        Answer at least {PASS_THRESHOLD} of {pairs.length} correctly to proceed.
       </p>
       <TextPairProblem
+        key={`screen-${currentIdx}`}
         textA={pair.textA}
         textB={pair.textB}
         problemIndex={currentIdx}
-        totalProblems={SCREENING_PAIRS.length}
+        totalProblems={pairs.length}
         onSubmit={handleSubmit}
       />
     </div>

@@ -7,7 +7,7 @@ import InfoOverlay from "./InfoOverlay.jsx";
 
 const ROOT_COLLECTION = "uncertainty_user";
 const PROBLEMS_PER_GROUP = 20;
-const NUM_GROUPS = 6;
+const NUM_GROUPS = 10;
 const ATTENTION_CHECK_POSITION = 10; // insert between problem 10 and 11
 
 const ATTENTION_CHECK_CORRECT_ANSWER = "Slightly B";
@@ -48,6 +48,14 @@ function readOriginalGenerated(row) {
   return { original: a, generated: b, hasOriginalFlag: false };
 }
 
+function readMeta(row) {
+  return {
+    task: row.task ?? row.Task ?? null,
+    model: row.model ?? row.Model ?? null,
+    turn: row.turn ?? row.Turn ?? null,
+  };
+}
+
 export default function Experiment({ PID, qgroup, onFinish }) {
   const [problems, setProblems] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -74,10 +82,12 @@ export default function Experiment({ PID, qgroup, onFinish }) {
         const assigned = rows.slice(groupStart, Math.min(groupEnd, rows.length))
           .map((row, localIdx) => {
             const { original, generated, hasOriginalFlag } = readOriginalGenerated(row);
+            const meta = readMeta(row);
             return {
               original,
               generated,
               hasOriginalFlag,
+              ...meta,
               // 1-indexed question id within the full CSV.
               questionId: groupStart + localIdx + 1,
             };
@@ -93,6 +103,9 @@ export default function Experiment({ PID, qgroup, onFinish }) {
             questionId: q.questionId,
             text_A_is_original: q.hasOriginalFlag ? (aIsOriginal ? 1 : 0) : null,
             text_B_is_original: q.hasOriginalFlag ? (aIsOriginal ? 0 : 1) : null,
+            task: q.task,
+            model: q.model,
+            turn: q.turn,
             is_attention_check: false,
           };
         });
@@ -103,6 +116,9 @@ export default function Experiment({ PID, qgroup, onFinish }) {
           questionId: -1,
           text_A_is_original: null,
           text_B_is_original: null,
+          task: null,
+          model: null,
+          turn: null,
         });
 
         setProblems(shuffled);
@@ -141,6 +157,9 @@ export default function Experiment({ PID, qgroup, onFinish }) {
       is_attention_check: isAttention,
       text_A_is_original: problem.text_A_is_original,
       text_B_is_original: problem.text_B_is_original,
+      task: problem.task ?? null,
+      model: problem.model ?? null,
+      turn: problem.turn ?? null,
       user_choice: result.user_choice,
       response_time: result.response_time,
       on_screen_time: result.on_screen_time,

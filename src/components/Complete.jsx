@@ -7,15 +7,16 @@ const ROOT_COLLECTION = "uncertainty_user";
 const PASS_URL = "https://app.prolific.com/submissions/complete?cc=C1L81448";
 const FAIL_URL = "https://app.prolific.com/submissions/complete?cc=C1AOAVMH";
 
-const scale = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"];
+// Likert / multiple-choice questions are commented out for the pilot study;
+// only the free-response questions remain.
+// const scale = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"];
+// const LIKERT_QUESTIONS = [
+//   { key: "challenging", text: "The study was challenging." },
+//   { key: "boring", text: "I found the study to be boring." },
+//   { key: "confident", text: "I felt confident in my choices throughout the study." },
+// ];
 
-const LIKERT_QUESTIONS = [
-  { key: "challenging", text: "The study was challenging." },
-  { key: "boring", text: "I found the study to be boring." },
-  { key: "confident", text: "I felt confident in my choices throughout the study." },
-];
-
-const REQUIRED_FIELDS = LIKERT_QUESTIONS.map((q) => q.key);
+const REQUIRED_FIELDS = [];
 
 export default function Complete({ PID }) {
   const [loading, setLoading] = useState(false);
@@ -23,9 +24,6 @@ export default function Complete({ PID }) {
   const [redirectUrl, setRedirectUrl] = useState(null);
 
   const [responses, setResponses] = useState({
-    challenging: "",
-    boring: "",
-    confident: "",
     strategy_text: "",
     overall_text: "",
   });
@@ -65,11 +63,6 @@ export default function Complete({ PID }) {
       await updateDoc(userRef, {
         survey: {
           timestamp: serverTimestamp(),
-          study_experience: {
-            challenging: responses.challenging,
-            boring: responses.boring,
-            confident: responses.confident,
-          },
           strategy_free_response: responses.strategy_text.trim(),
           overall_experience: responses.overall_text.trim(),
         },
@@ -92,26 +85,10 @@ export default function Complete({ PID }) {
 
       <hr style={{ margin: "20px 0" }} />
 
-      <h3>Study Experience</h3>
-      <div style={{ marginBottom: 30 }}>
-        {LIKERT_QUESTIONS.map((q) => (
-          <div key={q.key} style={questionRow}>
-            <div style={{ flex: 1, fontWeight: 600 }}>{q.text}</div>
-            <select
-              value={responses[q.key]}
-              onChange={(e) => handleChange(q.key, e.target.value)}
-              style={{ padding: 6, width: 250 }}
-            >
-              <option value="">Select...</option>
-              {scale.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-        ))}
-      </div>
-
-      <hr style={{ margin: "25px 0" }} />
+      {/*
+        Likert "Study Experience" questions intentionally omitted for the
+        pilot study. Only the free-response questions are collected.
+      */}
 
       <h3>Free Response</h3>
       <div style={{ marginBottom: 20 }}>
@@ -199,10 +176,3 @@ export default function Complete({ PID }) {
     </div>
   );
 }
-
-const questionRow = {
-  display: "flex",
-  alignItems: "center",
-  marginBottom: 15,
-  gap: 20,
-};

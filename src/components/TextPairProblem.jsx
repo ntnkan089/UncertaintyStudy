@@ -22,7 +22,7 @@ export default function TextPairProblem({
   problemIndex,
   totalProblems,
   onSubmit,
-  questionText = "Which text communicates its main claim with more certainty? Focus on how confidently each text presents its conclusion.",
+  questionText = null,
   showChoiceTooltips = true,
   counterLabel = "Example",
 }) {
@@ -91,7 +91,13 @@ export default function TextPairProblem({
       </div>
 
       <div style={{ marginTop: 24 }}>
-        <p style={{ fontWeight: 600 }}>{questionText}</p>
+        <p style={{ fontWeight: 600 }}>
+          {questionText ? (
+            questionText
+          ) : (
+            <>Which text communicates its main finding <strong>more confidently</strong>?</>
+          )}
+        </p>
 
         <div style={radioRow}>
           {CERTAINTY_CHOICES.map((c) => (
