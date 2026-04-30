@@ -49,10 +49,12 @@ export default function Screening({ PID, onPass, onFail }) {
       .then((csv) => {
         const parsed = Papa.parse(csv, { header: true, skipEmptyLines: true });
         const rows = parsed.data
-          .map((r) => ({
+          .map((r, idx) => ({
             original: r.Original ?? r.original ?? "",
             generated: r.Generated ?? r.generated ?? "",
             expectedTemplates: parseExpectedTemplates(r.expected_answer),
+            // 1-indexed position in screening_examples.csv, captured before shuffling.
+            questionId: idx + 1,
           }))
           .filter((r) => r.original && r.generated);
 
@@ -67,6 +69,7 @@ export default function Screening({ PID, onPass, onFail }) {
             text_A_is_original: aIsOriginal ? 1 : 0,
             text_B_is_original: aIsOriginal ? 0 : 1,
             correctAnswers,
+            questionId: r.questionId,
           };
         });
 
@@ -92,7 +95,7 @@ export default function Screening({ PID, onPass, onFail }) {
       );
       await setDoc(problemRef, {
         problem_id: currentIdx,
-        question_id: currentIdx,
+        question_id: pair.questionId,
         is_screening: true,
         is_attention_check: false,
         text_A_is_original: pair.text_A_is_original,
