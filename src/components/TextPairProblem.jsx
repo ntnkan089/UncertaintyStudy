@@ -112,7 +112,7 @@ export default function TextPairProblem({
         </div>
       </div>
 
-      <div style={{ textAlign: "right", marginTop: 120 }}>
+      <div style={{ textAlign: "right", marginTop: 90 }}>
         <button
           onClick={handleNext}
           disabled={!canSubmit}
