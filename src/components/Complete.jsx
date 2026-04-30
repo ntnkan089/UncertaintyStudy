@@ -77,7 +77,7 @@ export default function Complete({ PID }) {
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: 20, textAlign: "left" }}>
+    <div style={{ maxWidth: "min(1400px, 92vw)", margin: "0 auto", padding: 20, textAlign: "left" }}>
       <h2 style={{ fontWeight: 700, textAlign: "center" }}>Final Survey</h2>
       <p style={{ textAlign: "center" }}>
         Please complete the following questions before finishing the study.

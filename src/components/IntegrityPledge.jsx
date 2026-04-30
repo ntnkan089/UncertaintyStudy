@@ -22,7 +22,7 @@ export default function IntegrityPledge({ PID, onNext, onBack }) {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
+    <div style={{ maxWidth: "min(900px, 92vw)", margin: "0 auto", padding: 20 }}>
       <h2>Integrity Pledge</h2>
       <p style={{ lineHeight: 1.6, textAlign: "left" }}>
         By checking the box below, I pledge that I will complete this study

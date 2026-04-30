@@ -204,16 +204,14 @@ function ExamplePage({ example, title, selection, onSelect }) {
 
           return (
             <div key={o.label} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-              <label style={labelStyle}>
-                <input
-                  type="radio"
-                  name={`example-${title}`}
-                  checked={isThisSelected}
-                  onChange={() => selection === null && onSelect(o.label)}
-                  disabled={selection !== null}
-                />
-                <span>{o.label}</span>
-              </label>
+              <ExampleOptionLabel
+                option={o}
+                labelStyle={labelStyle}
+                inputName={`example-${title}`}
+                isSelected={isThisSelected}
+                disabled={selection !== null}
+                onPick={() => selection === null && onSelect(o.label)}
+              />
               {showAfterSelect && isThisCorrect && (
                 <div style={majorityTag}>(Majority choice)</div>
               )}
@@ -226,8 +224,8 @@ function ExamplePage({ example, title, selection, onSelect }) {
         <div style={isCorrect ? blueBox : redBox}>
           <div style={{ fontWeight: 700, marginBottom: 8 }}>
             {isCorrect
-              ? "Your answer agrees with the majority of individuals! Many explained their choice as follows:"
-              : "Your answer differs from the majority of participants! Many who chose differently explained their reasoning as follows:"}
+              ? "Your answer agrees with the majority of individuals! A typical explanation is:"
+              : `Your answer differs from the majority of participants! A typical explanation from individuals selecting "${example.correctAnswer}":`}
           </div>
           <p style={{ margin: 0, lineHeight: 1.6 }}>{example.explanation}</p>
         </div>
@@ -236,7 +234,32 @@ function ExamplePage({ example, title, selection, onSelect }) {
   );
 }
 
-const container = { maxWidth: 900, margin: "0 auto", padding: 20, textAlign: "left" };
+function ExampleOptionLabel({ option, labelStyle, inputName, isSelected, disabled, onPick }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <label
+      style={{ ...labelStyle, position: "relative" }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <input
+        type="radio"
+        name={inputName}
+        checked={isSelected}
+        onChange={onPick}
+        disabled={disabled}
+      />
+      <span>{option.label}</span>
+      {hover && (
+        <div style={choiceTooltipBox}>
+          <strong>{option.label}</strong> &ndash; {option.desc}
+        </div>
+      )}
+    </label>
+  );
+}
+
+const container = { maxWidth: "min(1400px, 92vw)", margin: "0 auto", padding: 20, textAlign: "left" };
 const para = { lineHeight: 1.7 };
 const navBtn = { padding: "10px 24px", borderRadius: 8, fontSize: "1rem" };
 
@@ -289,5 +312,22 @@ const redBox = {
   border: "1px solid #c62828",
   borderRadius: 8,
   background: "rgba(198, 40, 40, 0.08)",
+  color: "var(--color-text)",
+};
+
+const choiceTooltipBox = {
+  position: "absolute",
+  top: 28,
+  left: 0,
+  width: 280,
+  backgroundColor: "var(--color-bg)",
+  border: "1px solid var(--color-text-muted)",
+  borderRadius: 8,
+  padding: 10,
+  boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+  zIndex: 100,
+  fontSize: 13,
+  lineHeight: 1.5,
+  fontWeight: 400,
   color: "var(--color-text)",
 };

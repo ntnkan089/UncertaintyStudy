@@ -8,6 +8,8 @@
   --color-border:      transparent;
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Scale base font with viewport so text stays readable on large monitors. */
+  font-size: clamp(15px, calc(13px + 0.35vw), 20px);
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;

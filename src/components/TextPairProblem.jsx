@@ -74,7 +74,7 @@ export default function TextPairProblem({
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: 20, textAlign: "left" }}>
+    <div style={{ maxWidth: "min(1400px, 92vw)", margin: "0 auto", padding: 20, textAlign: "left" }}>
       <div style={{ textAlign: "right", marginBottom: 10, fontSize: 14, color: "var(--color-text-muted)" }}>
         {counterLabel} {problemIndex + 1} / {totalProblems}
       </div>
@@ -112,7 +112,7 @@ export default function TextPairProblem({
         </div>
       </div>
 
-      <div style={{ textAlign: "right", marginTop: 24 }}>
+      <div style={{ textAlign: "right", marginTop: 90 }}>
         <button
           onClick={handleNext}
           disabled={!canSubmit}

@@ -23,7 +23,7 @@ export default function Consent({ PID, onNext }) {
   };
 
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", textAlign: "left", padding: 20 }}>
+    <div style={{ maxWidth: "min(1100px, 92vw)", margin: "0 auto", textAlign: "left", padding: 20 }}>
       <div style={{ textAlign: "center" }}>
         <img
           src={base + "uci_seal.png"}
