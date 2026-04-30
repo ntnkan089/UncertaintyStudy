@@ -7,7 +7,6 @@ import InfoOverlay from "./InfoOverlay.jsx";
 
 const ROOT_COLLECTION = "uncertainty_user";
 const PROBLEMS_PER_GROUP = 20;
-const NUM_GROUPS = 10;
 const ATTENTION_CHECK_POSITION = 10; // insert between problem 10 and 11
 
 const ATTENTION_CHECK_CORRECT_ANSWER = "Slightly B";
@@ -73,8 +72,10 @@ export default function Experiment({ PID, qgroup, onFinish }) {
           (r) => !parseAttentionFlag(r.is_attention_check),
         );
 
-        // qgroup is 1..NUM_GROUPS; default to 1 if invalid.
-        const g = Number.isInteger(qgroup) && qgroup >= 1 && qgroup <= NUM_GROUPS
+        const numGroups = Math.max(1, Math.ceil(rows.length / PROBLEMS_PER_GROUP));
+
+        // qgroup is 1..numGroups; default to 1 if invalid.
+        const g = Number.isInteger(qgroup) && qgroup >= 1 && qgroup <= numGroups
           ? qgroup
           : 1;
         const groupStart = (g - 1) * PROBLEMS_PER_GROUP;
