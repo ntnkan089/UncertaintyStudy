@@ -4,8 +4,8 @@ import { doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
 const ROOT_COLLECTION = "uncertainty_user";
 
-const PASS_URL = "https://app.prolific.com/submissions/complete?cc=C1L81448";
-const FAIL_URL = "https://app.prolific.com/submissions/complete?cc=C1AOAVMH";
+const PASS_URL = "https://app.prolific.com/submissions/complete?cc=CAA3XCCL";
+const FAIL_URL = "https://app.prolific.com/submissions/complete?cc=C17C7WF7";
 
 // Likert / multiple-choice questions are commented out for the pilot study;
 // only the free-response questions remain.
