@@ -64,7 +64,7 @@ export default function Consent({ PID, onNext }) {
       <p>
         <strong>Time Commitment</strong>
         <br />
-        This study typically takes less than <strong>30 minutes</strong> to
+        This study typically takes less than <strong>20 minutes</strong> to
         complete.
       </p>
 
@@ -92,7 +92,7 @@ export default function Consent({ PID, onNext }) {
       <p>
         <strong>Reimbursement &amp; Compensation</strong>
         <br />
-        You will receive <strong>$6 USD</strong> for your participation via
+        You will receive <strong>$4 USD</strong> for your participation via
         Prolific.
         <br />
         <u>Note</u>: If your performance is below a minimal threshold for
